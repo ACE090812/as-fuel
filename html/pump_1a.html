@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pump 1a texture</title>
+<style>
+/* This page IS the pump texture (512x512 original, rendered at 1024x1024).
+   Coordinates below are the original texture pixels x2. */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1024px; height: 1024px; overflow: hidden; background: #000; font-family: 'Segoe UI', Arial, sans-serif; }
+#bg { position: absolute; left: 0; top: 0; width: 1024px; height: 1024px; }
+
+/* ── main LCD glass ── */
+#glass {
+    position: absolute; left: 296px; top: 42px; width: 240px; height: 132px;
+    background: #0a0d0a; border-radius: 4px; padding: 8px 10px;
+    display: flex; flex-direction: column; gap: 6px;
+}
+.row { display: flex; align-items: center; gap: 8px; }
+.lcd {
+    flex: 1; height: 42px; background: #a4b77a; border-radius: 3px;
+    box-shadow: inset 0 0 8px rgba(0,0,0,.35);
+    color: #17220d; font: 800 38px/42px 'Consolas', 'Courier New', monospace;
+    text-align: right; padding-right: 8px; letter-spacing: 2px; position: relative; overflow: hidden;
+}
+.lcd::before { content: '88888'; position: absolute; right: 8px; color: rgba(23,34,13,.08); }
+.lcd span { position: relative; }
+.unit { width: 62px; color: #cdd6c0; font: 700 15px 'Consolas', monospace; letter-spacing: 1px; }
+#tankRow { display: none; align-items: center; gap: 8px; margin-top: 2px; }
+#tankRow.show { display: flex; }
+#tankRow .lbl { width: 62px; color: #cdd6c0; font: 700 13px 'Consolas', monospace; text-align: right; }
+.bar { flex: 1; height: 10px; background: #1b201b; border: 1px solid #3a423a; border-radius: 3px; overflow: hidden; }
+#fill { height: 100%; width: 0; background: #ffb000; }
+#fill.low { background: #ff4d4d; }
+
+/* ── left info panel (covers the card reader area) ── */
+#info {
+    position: absolute; left: 14px; top: 38px; width: 272px; height: 216px;
+    background: #0b1016; border: 2px solid #2b323c; border-radius: 6px; padding: 14px 16px;
+    display: flex; flex-direction: column; color: #e8eef7;
+}
+#brand { font-weight: 800; letter-spacing: 3px; font-size: 19px; color: #ffb000; }
+#status { font-size: 13px; letter-spacing: 3px; color: #7c8ba1; font-weight: 700; margin-top: 4px; }
+#status.fuel { color: #ffb000; } #status.done { color: #3ddc84; }
+#price { margin-top: 12px; font-size: 15px; color: #7c8ba1; letter-spacing: 2px; }
+#price b { color: #e8eef7; font-size: 26px; letter-spacing: 0; margin-left: 6px; }
+#prompts { margin-top: auto; display: flex; flex-direction: column; gap: 9px; }
+.prompt { display: flex; align-items: center; gap: 10px; font-size: 17px; line-height: 1.1; }
+.key { min-width: 30px; height: 30px; padding: 0 6px; background: #ffb000; color: #111; font-weight: 800; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-size: 17px; }
+</style>
+</head>
+<body>
+<img id="bg" src="pump_1a.png" alt="">
+
+<div id="glass">
+    <div class="row"><div class="lcd"><span id="cost">0</span></div><div class="unit">SALE $</div></div>
+    <div class="row"><div class="lcd"><span id="litres">0.0</span></div><div class="unit">LITRES</div></div>
+    <div id="tankRow"><span class="lbl" id="tankPct">0%</span><div class="bar"><div id="fill"></div></div></div>
+</div>
+
+<div id="info">
+    <div id="brand">NINE LABS FUEL</div>
+    <div id="status">READY</div>
+    <div id="price">PRICE<b id="priceVal">$0.00</b>/L</div>
+    <div id="prompts"></div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const STATUS = { idle: 'READY', fuel: 'FUELLING', done: 'COMPLETE' };
+
+function render(d) {
+    if (!d) return;
+    const mode = d.mode || 'idle';
+    $('status').textContent = STATUS[mode] || 'READY';
+    $('status').className = mode;
+    if (d.brand) $('brand').textContent = d.brand;
+    if (typeof d.price === 'number') $('priceVal').textContent = '$' + d.price.toFixed(2);
+
+    const live = mode === 'fuel' || mode === 'done';
+    $('cost').textContent = live && typeof d.cost === 'number' ? Math.round(d.cost) : '0';
+    $('litres').textContent = live && typeof d.litres === 'number' ? d.litres.toFixed(1) : '0.0';
+
+    const row = $('tankRow');
+    if (typeof d.tank === 'number' && mode !== 'done') {
+        const pct = Math.max(0, Math.min(100, d.tank));
+        row.classList.add('show');
+        $('tankPct').textContent = Math.round(pct) + '%';
+        $('fill').style.width = pct + '%';
+        $('fill').classList.toggle('low', pct < 15);
+    } else row.classList.remove('show');
+
+    const box = $('prompts');
+    box.innerHTML = '';
+    (d.prompts || []).forEach((p) => {
+        const el = document.createElement('div');
+        el.className = 'prompt';
+        if (p.key) { const k = document.createElement('span'); k.className = 'key'; k.textContent = p.key; el.appendChild(k); }
+        const t = document.createElement('span'); t.textContent = p.label; el.appendChild(t);
+        box.appendChild(el);
+    });
+}
+
+window.addEventListener('message', (e) => {
+    let data = e.data;
+    if (typeof data === 'string') { try { data = JSON.parse(data); } catch (_) { return; } }
+    render(data);
+});
+
+if (location.search.includes('preview')) {
+    render({ mode: 'fuel', brand: 'NINE LABS FUEL', price: 3.5, litres: 12.4, cost: 44, tank: 62,
+             prompts: [{ key: 'E', label: 'Release to stop' }] });
+}
+</script>
+</body>
+</html>

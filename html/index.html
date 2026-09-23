@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fuel Pump</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="screen" id="screen" data-mode="idle">
+        <header>
+            <div class="brand" id="brand">NINE LABS FUEL</div>
+            <div class="status"><span class="dot"></span><span id="statusText">READY</span></div>
+        </header>
+
+        <main>
+            <section class="view view-idle">
+                <div class="label">PRICE PER LITRE</div>
+                <div class="big"><span class="cur">£</span><span id="price">0.00</span></div>
+            </section>
+
+            <section class="view view-live">
+                <div class="cards">
+                    <div class="card">
+                        <div class="label">LITRES</div>
+                        <div class="value"><span id="litres">0.0</span><small>L</small></div>
+                    </div>
+                    <div class="card">
+                        <div class="label" id="costLabel">TOTAL</div>
+                        <div class="value"><small>£</small><span id="cost">0</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="tank" id="tankWrap">
+                <div class="tank-head"><span>TANK</span><span id="tankPct">0%</span></div>
+                <div class="bar"><div class="fill" id="tankFill"></div></div>
+            </div>
+        </main>
+
+        <footer id="prompts"></footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
