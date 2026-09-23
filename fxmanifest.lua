@@ -3,15 +3,11 @@ game 'gta5'
 lua54 'yes'
 
 name 'as-fuel'
-author '9Labs'
+author 'ACE Studios'
 description 'Fuel system with a world-space DUI pump display (QBCore / Qbox)'
 version '1.0.0'
 
 dependency 'qb-core'
-
--- Uncomment to let scripts that call exports.LegacyFuel:GetFuel/SetFuel use this resource
--- (only if you do NOT also run LegacyFuel).
--- provide 'LegacyFuel'
 
 shared_scripts {
     'config.lua',
