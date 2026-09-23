@@ -1,7 +1,7 @@
 Config = {}
 
 -- ─────────────────────────────── General ───────────────────────────────
-Config.Brand      = 'NINE LABS FUEL'
+Config.Brand      = 'ACE Studios'
 Config.PayAccount = 'cash'      -- 'cash' or 'bank'
 Config.FlowRate   = 2.0         -- litres per second at the pump
 
@@ -111,7 +111,7 @@ Config.NoFuelModels  = {                -- model names that never use fuel
 
 -- ─────────────────────────────── Jerry can ─────────────────────────────
 Config.JerryCan = {
-    price    = 60,      -- price of a new can (item / weapon given by server/bridge.lua)
+    price    = 40,      -- price of a new can (item / weapon given by server/bridge.lua)
     capacity = 20.0,    -- litres
     flowRate = 1.5,     -- litres per second when pouring into a vehicle
     item     = 'weapon_petrolcan',   -- QB item name (ox_inventory uses WEAPON_PETROLCAN)
@@ -224,7 +224,7 @@ Config.PumpTouch = {
     -- prop_gas_pump_1b = { offset = vec3(0.0, -0.20, 1.30), heading = 180.0, width = 0.60 },
 }
 
-Config.Tuner = true     -- enables /fuelscreen (turn off in production)
+Config.Tuner = false     -- enables /fuelscreen (turn off in production)
 
 -- ─────────────────────────────── Blips ─────────────────────────────────
 Config.Blips = {
